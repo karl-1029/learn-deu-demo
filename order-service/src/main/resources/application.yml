@@ -1,21 +1,18 @@
 spring:
-  config:
-    import: optional:nacos:127.0.0.1:8848
-  application:
-    name: order-service
   cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-      config:
-        server-addr: 127.0.0.1:8848
-        file-extension: yaml
-        import-check:
-          enabled: false
     sentinel:
       transport:
         dashboard: 127.0.0.1:8080
         port: 8719
+
+# Nacos 配置中心示例 - 本地配置（用于测试优先级）
+order-service:
+  config:
+    appName: "订单服务-from-local"
+    env: "local环境-form-dev"
+    description: "描述-from-local"
+
+
 
 server:
   port: 8082
