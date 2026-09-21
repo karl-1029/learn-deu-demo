@@ -3,6 +3,8 @@ spring:
     import: optional:nacos:gateway.yaml
   application:
     name: gateway
+  reactor:
+    context-propagation: auto   # WebFlux 下自动传播 ThreadLocal（含 MDC traceId）
   cloud:
     nacos:
       discovery:
@@ -22,7 +24,7 @@ spring:
             - Path=/api/user/**
           filters:
             - StripPrefix=1
-            - RouteId=X-test-header-key,test--header-value
+            - RouteId=X-Trace-Id,traceId
 
         # 订单服务路由
         - id: order-service

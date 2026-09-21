@@ -39,14 +39,14 @@ public class RouteIdGatewayFilterFactory
         String headerName = Optional.ofNullable(config.getName()).filter(n -> !n.isBlank()).orElse("X-Trace-Source");
         String headerValue = Optional.ofNullable(config.getValue()).filter(v -> !v.isBlank()).orElse("gateway");
 
-        log.info("[AddTraceId GatewayFilterFactory 路由级别的filter] 过滤器已注册, key={}, value={}", headerName, headerValue);
+        log.info("[RouteId GatewayFilterFactory 路由级别的filter] 过滤器已注册, key={}, value={}", headerName, headerValue);
         return (exchange, chain) -> {
 
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                     .header(headerName, headerValue)
                     .build();
 
-            log.info("[AddTraceId GatewayFilterFactory 路由级别的filter] 注入 , {}={}", headerName, headerValue);
+            log.info("[RouteId GatewayFilterFactory 路由级别的filter] 注入 , {}={}", headerName, headerValue);
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
         };
     }
