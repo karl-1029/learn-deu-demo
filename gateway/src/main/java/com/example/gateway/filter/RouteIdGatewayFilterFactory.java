@@ -7,8 +7,6 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,13 +30,9 @@ public class RouteIdGatewayFilterFactory
 
     @Override
     public String name() {
-        return "AddTraceId";
+        return "RouteId";
     }
 
-    @Override
-    public List<String> shortcutFieldOrder() {
-        return Arrays.asList("name", "value");
-    }
 
     @Override
     public GatewayFilter apply(Config config) {
