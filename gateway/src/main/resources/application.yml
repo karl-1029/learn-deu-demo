@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: optional:nacos:gateway.yaml
   application:
     name: gateway
   reactor:
@@ -10,8 +8,7 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
       config:
-        import-check:
-          enabled: false
+        enabled: false
         server-addr: 127.0.0.1:8848
     gateway:
       routes:
@@ -22,6 +19,7 @@ spring:
             - Path=/api/user/**
           filters:
             - StripPrefix=1
+
         # 订单服务路由
         - id: order-service
           uri: lb://order-service

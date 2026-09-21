@@ -36,6 +36,8 @@ public class OrderRouteIdGatewayFilterFactory
 
     @Override
     public GatewayFilter apply(Config config) {
+        log.info("[OrderRouteId GatewayFilterFactory 路由级别的filter注册]");
+
         String headerName = Optional.ofNullable(config.getName()).filter(n -> !n.isBlank()).orElse("X-Trace-Source");
         String headerValue = Optional.ofNullable(config.getValue()).filter(v -> !v.isBlank()).orElse("gateway");
 
