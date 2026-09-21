@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 /**
- * 自定义路由级过滤器工厂 — 向请求头中注入 traceId
+ * 自定义路由级过滤器工厂 — 向请求头中注入 X-Trace-Source
  * <p>
  * 配置示例：
  * <pre>
@@ -21,16 +21,16 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class RouteIdGatewayFilterFactory
-        extends AbstractGatewayFilterFactory<RouteIdGatewayFilterFactory.Config> {
+public class OrderRouteIdGatewayFilterFactory
+        extends AbstractGatewayFilterFactory<OrderRouteIdGatewayFilterFactory.Config> {
 
-    public RouteIdGatewayFilterFactory() {
+    public OrderRouteIdGatewayFilterFactory() {
         super(Config.class);
     }
 
     @Override
     public String name() {
-        return "RouteId";
+        return "OrderRouteId";
     }
 
 
@@ -39,14 +39,12 @@ public class RouteIdGatewayFilterFactory
         String headerName = Optional.ofNullable(config.getName()).filter(n -> !n.isBlank()).orElse("X-Trace-Source");
         String headerValue = Optional.ofNullable(config.getValue()).filter(v -> !v.isBlank()).orElse("gateway");
 
-        log.info("[RouteId GatewayFilterFactory 路由级别的filter] 过滤器已注册, key={}, value={}", headerName, headerValue);
         return (exchange, chain) -> {
-
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                     .header(headerName, headerValue)
                     .build();
 
-            log.info("[RouteId GatewayFilterFactory 路由级别的filter] 注入 , {}={}", headerName, headerValue);
+            log.info("[RouteId GatewayFilterFactory 路由级别的filter执行], {}={}", headerName, headerValue);
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
         };
     }

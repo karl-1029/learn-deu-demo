@@ -10,12 +10,10 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
       config:
+        import-check:
+          enabled: false
         server-addr: 127.0.0.1:8848
     gateway:
-      discovery:
-        locator:
-          enabled: true          # 开启从注册中心动态创建路由的功能
-          lower-case-service-id: true
       routes:
         # 用户服务路由
         - id: user-service
@@ -24,8 +22,6 @@ spring:
             - Path=/api/user/**
           filters:
             - StripPrefix=1
-            - RouteId=X-Trace-Id,traceId
-
         # 订单服务路由
         - id: order-service
           uri: lb://order-service
@@ -33,6 +29,7 @@ spring:
             - Path=/api/order/**
           filters:
             - StripPrefix=1
+            - OrderRouteId=X-key,X-value
 
 server:
   port: 8080
