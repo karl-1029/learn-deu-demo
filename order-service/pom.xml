@@ -39,12 +39,6 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
-        <!-- Bootstrap 上下文支持（Spring Cloud 2020+ 默认禁用，需显式引入） -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-
         <!-- OpenFeign 服务调用 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -24,7 +24,8 @@ spring:
           predicates:
             - Path=/api/user/**
           filters:
-            - StripPrefix=1      # 去掉 /api 前缀
+            - StripPrefix=1
+            - AddTraceId=X-Trace-Source,gateway
 
         # 订单服务路由
         - id: order-service
