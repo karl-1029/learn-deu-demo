@@ -22,7 +22,7 @@ spring:
             - Path=/api/user/**
           filters:
             - StripPrefix=1
-            - AddTraceId=X-Trace-Source,gateway
+            - RouteId=X-test-header-key,test--header-value
 
         # 订单服务路由
         - id: order-service

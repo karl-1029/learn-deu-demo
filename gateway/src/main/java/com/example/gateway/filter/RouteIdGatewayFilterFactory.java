@@ -1,9 +1,7 @@
 package com.example.gateway.filter;
 
-import io.micrometer.tracing.Tracer;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -25,11 +23,10 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class AddTraceIdGatewayFilterFactory
-        extends AbstractGatewayFilterFactory<AddTraceIdGatewayFilterFactory.Config> {
+public class RouteIdGatewayFilterFactory
+        extends AbstractGatewayFilterFactory<RouteIdGatewayFilterFactory.Config> {
 
-
-    public AddTraceIdGatewayFilterFactory(Tracer tracer) {
+    public RouteIdGatewayFilterFactory() {
         super(Config.class);
     }
 
@@ -56,11 +53,7 @@ public class AddTraceIdGatewayFilterFactory
                     .build();
 
             log.info("[AddTraceId GatewayFilterFactory 路由级别的filter] 注入 , {}={}", headerName, headerValue);
-            return chain.filter(exchange.mutate().request(mutatedRequest).build())
-                    .doFinally(signalType -> {
-                        MDC.remove("traceId");
-                        MDC.remove("spanId");
-                    });
+            return chain.filter(exchange.mutate().request(mutatedRequest).build());
         };
     }
 
