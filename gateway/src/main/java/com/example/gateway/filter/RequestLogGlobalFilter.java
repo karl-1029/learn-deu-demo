@@ -1,6 +1,7 @@
 package com.example.gateway.filter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -28,14 +29,11 @@ public class RequestLogGlobalFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().value();
         String method = request.getMethod().name();
-        String clientIp = request.getRemoteAddress() != null
-                ? request.getRemoteAddress().getAddress().getHostAddress()
-                : "unknown";
 
         // 记录请求开始时间（存入 exchange 的 attributes 中，供响应阶段使用）
         exchange.getAttributes().put(START_TIME_ATTR, System.currentTimeMillis());
 
-        log.info("[Gateway] 请求进入: {} {} from {}", method, path, clientIp);
+        log.info("[Gateway] 请求进入: {} {} from {}", method, path);
 
         // 放行：chain.filter 之前是"请求阶段"，then 之后是"响应阶段"
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {

@@ -1,7 +1,9 @@
 package com.example.gateway.filter;
 
+import io.micrometer.tracing.Tracer;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 自定义路由级过滤器工厂 — 向请求头中注入 traceId
@@ -25,7 +28,8 @@ import java.util.List;
 public class AddTraceIdGatewayFilterFactory
         extends AbstractGatewayFilterFactory<AddTraceIdGatewayFilterFactory.Config> {
 
-    public AddTraceIdGatewayFilterFactory() {
+
+    public AddTraceIdGatewayFilterFactory(Tracer tracer) {
         super(Config.class);
     }
 
@@ -41,17 +45,22 @@ public class AddTraceIdGatewayFilterFactory
 
     @Override
     public GatewayFilter apply(Config config) {
-        log.info("[AddTraceId] 过滤器已注册, key={}, value={}", config.getName(), config.getValue());
+        String headerName = Optional.ofNullable(config.getName()).filter(n -> !n.isBlank()).orElse("X-Trace-Source");
+        String headerValue = Optional.ofNullable(config.getValue()).filter(v -> !v.isBlank()).orElse("gateway");
+
+        log.info("[AddTraceId GatewayFilterFactory 路由级别的filter] 过滤器已注册, key={}, value={}", headerName, headerValue);
         return (exchange, chain) -> {
-            String traceId = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16);
 
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                    .header("X-Trace-Id", traceId)
-                    .header(config.getName(), config.getValue())
+                    .header(headerName, headerValue)
                     .build();
 
-            log.info("[AddTraceId] 注入 traceId={}, {}={}", traceId, config.getName(), config.getValue());
-            return chain.filter(exchange.mutate().request(mutatedRequest).build());
+            log.info("[AddTraceId GatewayFilterFactory 路由级别的filter] 注入 , {}={}", headerName, headerValue);
+            return chain.filter(exchange.mutate().request(mutatedRequest).build())
+                    .doFinally(signalType -> {
+                        MDC.remove("traceId");
+                        MDC.remove("spanId");
+                    });
         };
     }
 

@@ -29,6 +29,7 @@
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
+        <micrometer-tracing-bridge-brave.version>1.2.5</micrometer-tracing-bridge-brave.version>
     </properties>
 
     <dependencies>
@@ -63,8 +64,8 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-tracing-bridge-brave</artifactId>
+                <version>${micrometer-tracing-bridge-brave.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
