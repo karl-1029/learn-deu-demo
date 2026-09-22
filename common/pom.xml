@@ -31,6 +31,11 @@
             <artifactId>micrometer-tracing-bridge-brave</artifactId>
             <version>${micrometer-tracing-bridge-brave.version}</version>
         </dependency>
+        <!-- Feign 与 Micrometer tracing 集成，保证 OpenFeign 调用继续透传 traceId / spanId -->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-micrometer</artifactId>
+        </dependency>
 
         <!-- Nacos 服务注册发现 -->
         <dependency>

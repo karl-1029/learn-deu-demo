@@ -49,23 +49,51 @@ shutdown.cmd
 3. 启动 user-service
 4. 启动 order-service
 
-## 4. 常见问题
+## 4. Sentinel 演示
 
-### 4.1 启动 Nacos 报错
+当前 `order-service` 中已经加入一个最小化的 Sentinel 流控 demo，用于学习 Sentinel 的核心用法：
+
+- 资源名：`order-sentinel-demo`
+- 规则：QPS <= 2 时放行，超过 2 触发限流
+- 访问地址：`GET http://localhost:8082/order/sentinel/demo`
+- 复位规则：`POST http://localhost:8082/order/sentinel/reset`
+
+关键代码位置：
+
+- `order-service/src/main/java/com/example/order/config/SentinelFlowRuleConfig.java`
+- `order-service/src/main/java/com/example/order/controller/OrderController.java`
+
+如果你本地有 Sentinel Dashboard，可配置：
+
+```yaml
+spring:
+  cloud:
+    sentinel:
+      eager: true
+      transport:
+        dashboard: 127.0.0.1:8858
+        port: 8719
+```
+
+注意：只要访问频率超过 2 QPS，就会触发 `BlockException`，适合用来观察 Sentinel 对热点流量的保护效果。
+
+## 5. 常见问题
+
+### 5.1 启动 Nacos 报错
 
 检查以下几点：
 - Java 版本是否为 17+
 - 是否有端口冲突（默认端口 8848）
 - 是否有权限访问安装目录
 
-### 4.2 服务注册不成功
+### 5.2 服务注册不成功
 
 确认：
 - Nacos 已正常启动
 - `application.yml` / `bootstrap.yml` 中的 Nacos 地址配置正确
 - 服务名和命名空间配置无误
 
-## 5. 备注
+## 6. 备注
 
 本项目使用的是 Spring Boot 3.x + Spring Cloud 2023 + Spring Cloud Alibaba 2023，运行环境要求：
 

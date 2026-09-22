@@ -1,13 +1,20 @@
 package com.example.order.controller;
 
+import com.alibaba.csp.sentinel.Entry;
+import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import com.example.common.entity.Order;
 import com.example.common.result.Result;
 import com.example.order.config.CustomerConfigProperties;
 import com.example.order.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -17,6 +24,7 @@ import java.util.Map;
 /**
  * 订单控制器
  */
+@Slf4j
 @RefreshScope
 @RestController
 @RequestMapping("/order")
@@ -69,5 +77,29 @@ public class OrderController {
         // 方式二：@Value + @RefreshScope
         config.put("description(@Value)", descriptionFromValue);
         return Result.success(config);
+    }
+
+    /**
+     * Sentinel 演示：流控规则，资源名和 FlowRuleConfig 保持一致。
+     * QPS 超过 2 时，将触发 BlockException，返回限流结果。
+     */
+    @GetMapping("/sentinel/demo")
+    public Result<String> sentinelDemo() {
+        try (Entry entry = SphU.entry("order-sentinel-demo")) {
+            log.info("order-service 执行业务逻辑，进入 Sentinel 保护的资源：order-sentinel-demo");
+            return Result.success("Sentinel demo 调用成功，业务正常执行");
+        } catch (BlockException e) {
+            log.warn("Sentinel 限流触发：{}", e.getRuleLimitApp(), e);
+            return Result.fail("Sentinel 限流触发，稍后再试");
+        }
+    }
+
+    /**
+     * 用于演示在运行时清理规则，以便再测一次。
+     */
+    @PostMapping("/sentinel/reset")
+    public Result<String> clearSentinelRules() {
+        FlowRuleManager.loadRules(Collections.emptyList());
+        return Result.success("Sentinel 规则已清空，当前不再限流");
     }
 }
