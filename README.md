@@ -94,13 +94,6 @@ java -Dserver.port=8858 -Dcsp.sentinel.dashboard.server=localhost:8858 -Dproject
 - `spring.cloud.sentinel.transport.dashboard=127.0.0.1:8858` 已配置
 - `order-service` 已正常启动，并访问过 `/order/sentinel/demo`
 
-如果端口冲突，可以先执行：
-
-```powershell
-netstat -ano | findstr 8719
-netstat -ano | findstr 8858
-```
-
 ## 6. 备注
 
 本项目使用的是 Spring Boot 3.x + Spring Cloud 2023 + Spring Cloud Alibaba 2023，运行环境要求：
@@ -111,7 +104,6 @@ netstat -ano | findstr 8858
 
 如果你在开发过程中遇到启动问题，可以先检查 Nacos 控制台是否正常运行，再定位具体服务配置问题。
 
-另外，Sentinel Dashboard 和应用的连接依赖于客户端 transport port。如果你看到 Dashboard 没有接收到机器信息，优先检查 `8719` 是否被占用，并确认 order-service 已成功启动。
 
 推荐启动顺序：
 
