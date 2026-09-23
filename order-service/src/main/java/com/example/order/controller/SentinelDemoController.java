@@ -2,10 +2,12 @@ package com.example.order.controller;
 
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import com.example.common.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +33,34 @@ public class SentinelDemoController {
             log.warn("Sentinel 限流触发：{}", e.getRuleLimitApp(), e);
             return Result.fail("Sentinel 限流触发，稍后再试");
         }
+    }
+
+    /**
+     * Sentinel 注解式资源演示。
+     * 当 QPS 超过规则限制时，会进入 blockHandler 指定的方法。
+     * 当方法内部抛出异常时，会进入 fallback 指定的方法。
+     */
+    @GetMapping("/sentinel/annotated")
+    @SentinelResource(value = "order-sentinel-demo-anno", blockHandler = "sentinelAnnotatedBlockHandler", fallback = "sentinelAnnotatedFallback")
+    public Result<String> sentinelDemoAnnotated(String id) {
+        log.info("order-service 注解式资源被调用：order-sentinel-demo-anno");
+        // 模拟业务异常演示 fallback（可注释掉以测试限流）
+        if (StringUtils.isEmpty(id)) {
+            throw new RuntimeException("模拟业务异常 走 fallback降级");
+        }
+        return Result.success("Sentinel 注解 demo 调用成功，业务正常执行");
+    }
+
+    // blockHandler 方法签名：与原方法参数一致，最后加 BlockException 参数
+    public Result<String> sentinelAnnotatedBlockHandler(BlockException ex) {
+        log.warn("注解式 Sentinel 限流触发：{}", ex.getClass().getSimpleName());
+        return Result.fail("注解式 Sentinel 限流，请稍后再试");
+    }
+
+    // fallback 方法签名：与原方法参数一致，或带 Throwable 参数
+    public Result<String> sentinelAnnotatedFallback(Throwable ex) {
+        log.error("注解式 Sentinel 触发降级或异常：", ex);
+        return Result.fail("注解式 Sentinel 降级，错误：" + ex.getMessage());
     }
 
     /**

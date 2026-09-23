@@ -10,6 +10,9 @@
         </encoder>
     </appender>
 
+    <logger name="com.alibaba.csp.sentinel" level="DEBUG"/>
+    <logger name="com.alibaba.cloud.sentinel" level="DEBUG"/>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
