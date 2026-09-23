@@ -16,6 +16,14 @@ spring:
       transport:
         dashboard: 127.0.0.1:8858
         port: 8719
+      datasource:
+        flow:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            data-id: ${spring.application.name}-sentinel-rules
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
 
 
 # Nacos 配置中心示例 - 本地配置（用于测试优先级）

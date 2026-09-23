@@ -19,19 +19,24 @@ public class SentinelFlowRuleConfig {
      * 确保规则加载在所有 Bean（包括 Sentinel transport）初始化完成之后执行，
      * 避免提前触发 InitExecutor.doInit() 导致 HeartbeatSender 读不到 dashboard 地址。
      */
-    @Bean
-    public ApplicationRunner sentinelFlowRulesInitializer() {
-        return (ApplicationArguments args) -> {
-            List<FlowRule> rules = new ArrayList<>();
 
-            FlowRule flowRule = new FlowRule();
-            flowRule.setResource("order-sentinel-demo");
-            flowRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
-            flowRule.setCount(2);
-            flowRule.setLimitApp("default");
-            rules.add(flowRule);
-
-            FlowRuleManager.loadRules(rules);
-        };
-    }
+    /**
+     * 规则已通过 application.yml 中的 spring.cloud.sentinel.datasource 从 Nacos 加载，
+     * 无需再硬编码。FlowRuleManager.loadRules() 是全量覆盖，会与 Nacos 数据源冲突。
+     */
+//    @Bean
+//    public ApplicationRunner sentinelFlowRulesInitializer() {
+//        return (ApplicationArguments args) -> {
+//            List<FlowRule> rules = new ArrayList<>();
+//
+//            FlowRule flowRule = new FlowRule();
+//            flowRule.setResource("order-sentinel-demo");
+//            flowRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
+//            flowRule.setCount(3);
+//            flowRule.setLimitApp("default");
+//            rules.add(flowRule);
+//
+//            FlowRuleManager.loadRules(rules);
+//        };
+//    }
 }
