@@ -43,7 +43,7 @@ public class SentinelDemoController {
     @GetMapping("/sentinel/annotated")
     @SentinelResource(value = "order-sentinel-demo-anno", blockHandler = "sentinelAnnotatedBlockHandler", fallback = "sentinelAnnotatedFallback")
     public Result<String> sentinelDemoAnnotated(String id) {
-        log.info("order-service 注解式资源被调用：order-sentinel-demo-anno");
+        log.info("order-service 注解式资源被调用：order-sentinel-demo-anno id : {}" ,id);
         // 模拟业务异常演示 fallback（可注释掉以测试限流）
         if (StringUtils.isEmpty(id)) {
             throw new RuntimeException("模拟业务异常 走 fallback降级");
@@ -52,14 +52,14 @@ public class SentinelDemoController {
     }
 
     // blockHandler 方法签名：与原方法参数一致，最后加 BlockException 参数
-    public Result<String> sentinelAnnotatedBlockHandler(BlockException ex) {
-        log.warn("注解式 Sentinel 限流触发：{}", ex.getClass().getSimpleName());
+    public Result<String> sentinelAnnotatedBlockHandler(String id, BlockException ex) {
+        log.warn("注解式 Sentinel 限流触发，id={}：{}", id, ex.getClass().getSimpleName());
         return Result.fail("注解式 Sentinel 限流，请稍后再试");
     }
 
-    // fallback 方法签名：与原方法参数一致，或带 Throwable 参数
-    public Result<String> sentinelAnnotatedFallback(Throwable ex) {
-        log.error("注解式 Sentinel 触发降级或异常：", ex);
+    // fallback 方法签名：与原方法参数一致，末尾可加 Throwable 参数
+    public Result<String> sentinelAnnotatedFallback(String id, Throwable ex) {
+        log.error("注解式 Sentinel 触发降级或异常，id={}：", id, ex);
         return Result.fail("注解式 Sentinel 降级，错误：" + ex.getMessage());
     }
 
