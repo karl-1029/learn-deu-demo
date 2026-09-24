@@ -43,6 +43,15 @@ public class OrderController {
     }
 
     /**
+     * 使用 Seata 的测试接口：发起全局事务，扣减用户余额并创建订单（模拟）
+     * 示例: POST /order/seata-create?failAfter=false
+     */
+    @PostMapping("/seata-create")
+    public Result<Order> seataCreate(@RequestParam(defaultValue = "false") boolean failAfter) {
+        return orderService.createOrderWithSeata(1l, BigDecimal.valueOf(20), failAfter);
+    }
+
+    /**
      * 查询订单列表
      */
     @GetMapping("/list")

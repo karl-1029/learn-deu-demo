@@ -4,6 +4,8 @@ import com.example.common.entity.Order;
 import com.example.common.entity.User;
 import com.example.common.result.Result;
 import com.example.order.feign.UserFeignClient;
+import com.example.order.mapper.OrderMapper;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class OrderService {
 
     private final UserFeignClient userFeignClient;
+    private final OrderMapper orderMapper;
 
     /**
      * 创建订单（演示跨服务调用）
@@ -44,8 +47,33 @@ public class OrderService {
                 amount,
                 "CREATED"
         );
-
         log.info("订单创建成功: {}", order);
+        return Result.success(order);
+    }
+
+    /**
+     * 使用 Seata 发起全局事务：先插入订单，再扣减用户余额
+     * 如果 failAfter=true，则在扣减余额后抛异常以验证回滚
+     */
+    @GlobalTransactional(name = "order-create-tx", rollbackFor = Exception.class)
+    public Result<Order> createOrderWithSeata(boolean failAfter) {
+        Order order = new Order();
+        order.setOrderNo(UUID.randomUUID().toString().replace("-", "").substring(0, 16));
+        order.setUserId(1L);
+        order.setAmount(new BigDecimal("99.90"));
+        order.setStatus("CREATED");
+        orderMapper.insert(order);
+        log.info("Seata 全局事务：订单已落库，准备调用用户服务扣减余额: {}", order);
+
+        Result<Void> dec = userFeignClient.createUser();
+        if (dec == null || dec.getCode() != 200) {
+            return Result.fail("扣减用户余额失败");
+        }
+
+        if (failAfter) {
+            throw new RuntimeException("force rollback for testing Seata");
+        }
+
         return Result.success(order);
     }
 

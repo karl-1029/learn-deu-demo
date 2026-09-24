@@ -1,8 +1,13 @@
-spring:
+﻿spring:
   config:
     import: optional:nacos:user-service.yaml
   application:
     name: user-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_db?useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
       discovery:
@@ -18,3 +23,16 @@ management:
     sampling:
       probability: 1.0
 
+mybatis-plus:
+  mapper-locations: classpath:/mappers/*.xml
+  type-aliases-package: com.example.common.entity
+  global-config:
+    db-config:
+      id-type: auto
+
+seata:
+  enabled: true
+  service:
+    vgroup-mapping:
+      my_test_tx_group: default
+  tx-service-group: my_test_tx_group
