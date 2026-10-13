@@ -2,6 +2,7 @@ package com.example.kafkaproducer.controller;
 
 import com.example.kafkaproducer.service.KafkaMessageProducer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ public class MessageController {
 
     @PostMapping("/messages/send")
     public Map<String, Object> sendMessage(@RequestBody Map<String, String> payload) {
-        String message = payload == null || payload.isEmpty() ? "hello kafka" : payload.getOrDefault("message", "hello kafka");
+        String message = CollectionUtils.isEmpty(payload) ? "hello kafka" : payload.getOrDefault("message", "hello kafka");
         kafkaMessageProducer.sendMessage(message);
 
         return Map.of(
