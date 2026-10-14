@@ -19,7 +19,7 @@ public class KafkaMessageConsumer {
 
     @KafkaListener(topics = "demo-topic", groupId = "demo-group")
     public void listen(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) throws Exception {
-        log.info("Received Kafka record: {}", objectMapper.writeValueAsString(record));
+        log.info("Received Kafka record: {}-{}-{}-{}", record.topic(),record.key(), record.partition(), record.offset());
         String value = record.value();
         log.info("value : {}", value);
         // ✅业务成功，手动提交offset
