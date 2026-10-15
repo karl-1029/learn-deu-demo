@@ -26,10 +26,16 @@
 docker compose up -d
 ```
 
-这会启动一个本地单机 Kafka + Zookeeper 环境，默认地址为：
+这会启动本地单机 Kafka，并在 Kafka 就绪后自动创建 `demo-topic`（1 个分区、1 个副本）。重复启动不会重复创建。Kafka UI 会等待 Kafka 就绪后启动。默认地址为：
 
 - Kafka：`localhost:9092`
-- Zookeeper：`localhost:2181`
+- Kafka UI：`http://localhost:8050`
+
+可使用以下命令确认 Topic 已创建：
+
+```bash
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+```
 
 ### 2.2 启动生产者和消费者
 
