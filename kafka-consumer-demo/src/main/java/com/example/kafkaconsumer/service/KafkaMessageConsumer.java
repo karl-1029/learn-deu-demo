@@ -22,7 +22,9 @@ public class KafkaMessageConsumer {
 //        log.info("KafkaMessageConsumer Received Kafka record: {}-{}-{}-{}", record.topic(),record.key(), record.partition(), record.offset());
         String value = record.value();
         log.info("KafkaMessageConsumer value : {}", value);
-        // ✅业务成功，手动提交offset
+        if ("fail".equalsIgnoreCase(value)) {
+            throw new IllegalArgumentException("Demo failure for message: " + value);
+        }
         acknowledgment.acknowledge();
     }
 }
