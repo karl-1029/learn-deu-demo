@@ -68,6 +68,26 @@ Received Kafka message: hello kafka
 - 消费者模块默认监听同一个 `demo-topic`
 - 如果需要改成你自己的主题名，可修改 `demo-topic` 常量和配置
 
+### 2.5 Kafka DLQ 演示
+
+DLQ 演示消费者也监听 `demo-topic`，使用独立的 `dlq-demo-group` 消费组，不影响原有消费者组。消息内容为 `fail` 时会模拟业务异常，最多重试 2 次（每次间隔 1 秒），仍失败后发送到 `demo-topic.DLT`。
+
+DLT topic 可由 Kafka 管理工具创建；本地 Kafka 可手动创建（示例源 topic 有 1 个分区，因此 DLT 至少需要 1 个分区）：
+
+```bash
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --if-not-exists --topic demo-topic.DLT --partitions 1 --replication-factor 1
+```
+
+用已有生产者接口发送失败消息：
+
+```bash
+curl -X POST http://localhost:8081/api/messages/send \
+  -H "Content-Type: application/json" \
+  -d '{"message":"fail"}'
+```
+
+在 Kafka UI (`http://localhost:8050`) 查看 `demo-topic.DLT`。发送其他内容（如 `hello kafka`）可验证正常消费路径。
+
 ## 3. Nacos 配置中心 / 注册中心
 
 已下载并启动 Nacos，目录如下：

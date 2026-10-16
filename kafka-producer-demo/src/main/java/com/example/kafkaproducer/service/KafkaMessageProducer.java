@@ -15,11 +15,16 @@ public class KafkaMessageProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     public void sendMessage(String message) {
-        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send("demo-topic", message);
+        sendMessage("demo-topic", message);
+    }
+
+    private void sendMessage(String topic, String message) {
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, message);
         future.thenAccept(result -> {
-            log.info("Sent message=[{}] with offset=[{}]", message, result.getRecordMetadata().offset());
+            log.info("Sent message=[{}] to topic=[{}] with offset=[{}]",
+                    message, topic, result.getRecordMetadata().offset());
         }).exceptionally(ex -> {
-            log.error("Unable to send message=[{}] due to : {}", message, ex.getMessage());
+            log.error("Unable to send message=[{}] to topic=[{}] due to: {}", message, topic, ex.getMessage());
             return null;
         });
     }

@@ -1,8 +1,5 @@
 package com.example.kafkaconsumer.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.function.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +12,15 @@ public class KafkaMessageConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaMessageConsumer.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @KafkaListener(topics = "demo-topic", groupId = "demo-group")
-    public void listen(ConsumerRecord<String, String> record, Acknowledgment acknowledgment) throws Exception {
+    public void listen(ConsumerRecord<String, String> record, Acknowledgment acknowledgment)  {
 //        log.info("KafkaMessageConsumer Received Kafka record: {}-{}-{}-{}", record.topic(),record.key(), record.partition(), record.offset());
         String value = record.value();
         log.info("KafkaMessageConsumer value : {}", value);
-        if ("fail".equalsIgnoreCase(value)) {
-            throw new IllegalArgumentException("Demo failure for message: " + value);
+        if (value.contains("fail")) {
+            log.info("Simulating processing failure for message: {}", value);
+            throw new RuntimeException("consumer handler failed....");
         }
         acknowledgment.acknowledge();
     }

@@ -6,9 +6,9 @@ spring:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: demo-group
-      auto-offset-reset: earliest
-      enable-auto-commit: false
+      auto-offset-reset: earliest # 设置消费者分组最初的消费进度为 earliest
+      enable-auto-commit: false   # 禁用自动提交
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
-      ack-mode: manual_immediate
+      ack-mode: manual_immediate # 手动立即确认

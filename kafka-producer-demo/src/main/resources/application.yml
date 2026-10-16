@@ -7,5 +7,5 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      retries: 3
-      acks: all
+      retries: 3  # 发送失败时，重试发送的次数
+      acks: all   # 0-不应答。1-leader 应答。all-所有 leader 和 follower 应答。

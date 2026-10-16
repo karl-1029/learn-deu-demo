@@ -52,6 +52,6 @@ services:
       - --topic
       - demo-topic
       - --partitions
-      - "1"
+      - "2"
       - --replication-factor
       - "1"
